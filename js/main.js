@@ -37,10 +37,9 @@ let thep5 = new p5(function (p) {
   
 
   p.draw = () => {
-    particle.F = Vector.is(0, 200);
+    particle.F = Vector.is(0, 200*particle.m);
     particle.updateDynamics(p, dt);
     particle.updateKinematics(p, dt);
-    console.log(particle.v.toString())
 
     p.clear();
     p.background(232, 238, 242);

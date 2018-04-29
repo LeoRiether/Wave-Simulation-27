@@ -9,8 +9,7 @@ export class Particle {
     this.F = Vector.zero;
     this.r = r;
     this._m = m;
-    this.m_inv = 1.0/this._m;
-    console.log(pos, r);
+    this.m_inv = 1.0/m;
   }
 
   get m() {
@@ -22,14 +21,13 @@ export class Particle {
   }
 
   updateDynamics(p, dt) {
-    console.log(this.m, this.m_inv);
-    this.a = this.F.times(this.m_inv);
-    this.F = Vector.zero;
+    this.a = Vector.Scale(this.F, this.m_inv);
+    this.F = Vector.zero; // Zera a força todo frame
   }
 
   updateKinematics(p, dt) {
-    this.v = this.v.plus(this.a.times(dt));
-    this.pos = this.pos.plus(this.v.times(dt));
+    this.v.plus(Vector.Scale(this.a, dt));
+    this.pos.plus(Vector.Scale(this.v, dt));
 
     if (this.pos.y >= p.windowHeight) {
       this.pos.y = p.windowHeight;
@@ -40,14 +38,20 @@ export class Particle {
   draw(pchan) {
     pchan.arc(this.pos.x, this.pos.y, this.r, this.r, 0, pchan.TAU);
   }
-
-
 };
 
 export class Wave {
 
-  constructor(plist) {
+  constructor(p) {
     
+  }
+
+  update() {
+
+  }
+
+  draw() {
+
   }
 }
 

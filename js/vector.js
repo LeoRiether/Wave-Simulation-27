@@ -13,19 +13,32 @@ export class Vector {
     return `${this.x}i ${this.y>0?'+':'-'} ${Math.abs(this.y)}j`;
   }
 
+  get neg() {
+    return Vector.scale(this, -1);
+  }
+
   abs() {
     return Math.sqrt(this.x*this.x + this.y*this.y);
   }
+
+  // Functions that have side effects (change this)
   plus(b) {
-    return Vector.Sum(this, b);
+    this.x += b.x;
+    this.y += b.y;
+    return this;
   }
   dot(b) {
-    return Vector.Dot(this, b);
+    this.x *= b.x;
+    this.y *= b.y;
+    return this;
   }
   times(s) {
-    return Vector.Scale(this, s);
+    this.x *= s;
+    this.y *= s;
+    return this;
   }
   
+  // Functions that don't have side effects (return new vectors)
   static Sum(a, b) {
     return new Vector(a.x+b.x, a.y+b.y);
   }
