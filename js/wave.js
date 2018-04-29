@@ -23,32 +23,31 @@ export class Particle {
    * Updates the forces on the system based on the positions
    */
   // yl and yr are particle_to_the_left.y and particle_to_the_right.y, respectively
-  updateDynamics(p, dt, k, yl, yr) {
+  updateDynamics(p, k, yl, yr) {
     // Sets yl and yr to the same y as 'this' particle, so it
     // doesn't generate any force
     yl = yl === false ? this.pos.y : yl;
     yr = yr === false ? this.pos.y : yr;
-
+    
     let dyl = yl - this.pos.y;
     let dyr = yr - this.pos.y;
 
     this.F = new Vector(0, dyl*k + dyr*k);
 
+    this.last_a = this.a;
     this.a = Vector.Scale(this.F, this.m_inv);
-    this.F = Vector.zero; // Zeroes the forces
   }
 
   // After updating all the forces, updates velocity and position of the particle
   updateKinematics(p, dt) {
-    // TODO: use Verlet Integration
-    // TODO: understand Verlet Integration
     this.v.plus(Vector.Scale(this.a, dt));
     this.pos.plus(Vector.Scale(this.v, dt));
-
-    // if (this.pos.y + Particle.r >= p.windowHeight) {
-    //   this.pos.y = p.windowHeight - Particle.r;
-    //   this.v.y *= -0.8;
-    // }
+    
+    // Velocity Verlet
+    // TODO: understand Verlet Integration
+    // this.pos.plus(Vector.Sum(Vector.Scale(this.v, dt), Vector.Scale(this.last_a, 0.5*dt*dt)));
+    // this.v.plus(Vector.Scale(Vector.Sum(this.a, this.last_a), 0.5*dt));
+    // this.v.times(0.9);
   }
 
   // P-chan!
@@ -75,39 +74,56 @@ export class Wave {
     }
   }
 
+  // Gets particle at index 'i'
+  // negative indexes work just like in python
+  at(i) {
+    return this.particles[i < 0 ? (this.particles.length + i) : i];
+  }
+
   update(p, dt) {
     // Dynamics update
-    this.particles[this.particles.length-1].updateDynamics(
-      p, dt, this.k, 
-      this.particles[this.particles.length-2].pos.y, 
+    this.at(-1).updateDynamics(
+      p, this.k, 
+      this.at(-2).pos.y, 
       false
     );
     for (let i = this.particles.length-2; i > 0; i--) {
-      this.particles[i].updateDynamics(
-        p, dt, this.k,
-        this.particles[i-1].pos.y,
-        this.particles[i+1].pos.y
+      this.at(i).updateDynamics(
+        p, this.k,
+        this.at(i-1).pos.y,
+        this.at(i+1).pos.y
       );
     }
-    this.particles[0].updateDynamics(p, dt, this.k, false, this.particles[1].pos.y);
+    this.at(0).updateDynamics(p, this.k, false, this.at(1).pos.y);
 
     // Kinematics update...
     // ikr only3 lines
-    for (let i = this.particles.length-1; i--; ) {
-      this.particles[i].updateKinematics(p, dt);
+    for (let i = this.particles.length-1; i >= 0; i--) {
+      this.at(i).updateKinematics(p, dt);
+      if (i > 0 && this.closeEnough(i)) { // close enough, no force
+        this.at(i).pos.y = this.at(i-1).pos.y;
+      }
     }
   }
 
   draw(p) {
-    for (let i = this.particles.length-1; i--; ) {
+    for (let i = this.particles.length-1; i >= 0; i--) {
       if (i > 0) {// if not on the last particle
         // WHERE DO WE DRAW THE LINE?
         // here. here we draw the line
-        p.line(this.particles[i-1].pos.x, this.particles[i-1].pos.y,
-               this.particles[i].pos.x, this.particles[i].pos.y);
+        p.line(this.at(i-1).pos.x, this.at(i-1).pos.y,
+               this.at(i).pos.x, this.at(i).pos.y);
       }
-      this.particles[i].draw(p);
+      this.at(i).draw(p);
     }
+  }
+
+  closeEnough(i) {
+    return false;
+    let dl = i == 0 ? 0 : Math.abs(this.at(i).pos.y - this.at(i-i).pos.y);
+    let dr = i == this.particles.length-1 ? 0 : Math.abs(this.at(i).pos.y - this.at(i+1).pos.y);
+
+    return (dl + dr) < 10;
   }
 }
 

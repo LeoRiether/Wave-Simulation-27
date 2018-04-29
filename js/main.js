@@ -8,6 +8,11 @@ let thep5 = new p5(function (p) {
   let fr = 40;
   let dt = 1.0/fr;
 
+  let opt = {
+    staticLastParticle: false,
+    mouseMoves: true
+  };
+
   // Guify
   let gui = new guify({
     title: 'Wave Simulation #27',
@@ -24,14 +29,37 @@ let thep5 = new p5(function (p) {
       property: 'k'
     },
     {
+      type: 'color',
+      label: 'Color',
+      format: 'hex',
+      onChange: (c) => {
+        p.fill(p.color(c));
+        p.stroke(p.color(c));
+      }
+    },
+    {
       type: 'button',
       label: 'Reset',
       action: () => {
-        for (let i = wave.particles.length-1; i--; ) {
-          wave.particles[i].pos.y = p.windowHeight/2;
-          wave.particles[i].v = Vector.zero;
+        for (let i = wave.particles.length-1; i >= 0; i--) {
+          wave.at(i).pos.y = p.windowHeight/2.0;
+          wave.at(i).v = Vector.zero;
+          wave.at(i).a = Vector.zero;
+          wave.at(i).last_a = Vector.zero;
         }
       }
+    },
+    {
+      type: 'checkbox',
+      label: 'Static Last Particle',
+      object: opt,
+      property: 'staticLastParticle'
+    },
+    {
+      type: 'checkbox',
+      label: 'Mouse Moves Particles',
+      object: opt,
+      property: 'mouseMoves'
     }
   ])
 
@@ -47,8 +75,11 @@ let thep5 = new p5(function (p) {
   p.draw = () => {
     p.clear();
     p.background(232, 238, 242);
-    wave.particles[0].pos.y = p.mouseY;
+    // wave.particles[wave.particles.length-1].pos.y = p.mouseY;
+    // wave.particles[0].pos.y = p.windowHeight/2;
     wave.update(p, dt);
+    if (opt.staticLastParticle) wave.at(-1).pos.y = p.windowHeight/2.0;
+    if (p.mouseIsPressed && opt.mouseMoves) wave.at(0).pos.y = p.mouseY;
     wave.draw(p);
   };
 });
