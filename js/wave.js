@@ -47,7 +47,7 @@ export class Particle {
     // TODO: understand Verlet Integration
     // this.pos.plus(Vector.Sum(Vector.Scale(this.v, dt), Vector.Scale(this.last_a, 0.5*dt*dt)));
     // this.v.plus(Vector.Scale(Vector.Sum(this.a, this.last_a), 0.5*dt));
-    // this.v.times(0.9);
+    // this.v.times(1.000001);
   }
 
   // P-chan!
@@ -74,13 +74,17 @@ export class Wave {
     }
   }
 
+  get len() {
+    return this.particles.length;
+  }
+
   // Gets particle at index 'i'
   // negative indexes work just like in python
   at(i) {
     return this.particles[i < 0 ? (this.particles.length + i) : i];
   }
 
-  update(p, dt) {
+  update(p, dt, staticLastParticle) {
     // Dynamics update
     this.at(-1).updateDynamics(
       p, this.k, 
@@ -98,16 +102,19 @@ export class Wave {
 
     // Kinematics update...
     // ikr only3 lines
-    for (let i = this.particles.length-1; i >= 0; i--) {
+    for (let i = this.len-1; i >= 0; i--) {
+    // for (let i = this.len - (staticLastParticle?2:1); i >= 0; i--) {
+    // for (let i = 0; i < this.len-1; i++) {
+      // if (p.mouseIsPressed && i == this.len-1) continue;
       this.at(i).updateKinematics(p, dt);
-      if (i > 0 && this.closeEnough(i)) { // close enough, no force
-        this.at(i).pos.y = this.at(i-1).pos.y;
-      }
+      // if (i > 0 && this.closeEnough(i)) { // close enough, no force
+      //   this.at(i).pos.y = this.at(i-1).pos.y;
+      // }
     }
   }
 
   draw(p) {
-    for (let i = this.particles.length-1; i >= 0; i--) {
+    for (let i = this.len-1; i >= 0; i--) {
       if (i > 0) {// if not on the last particle
         // WHERE DO WE DRAW THE LINE?
         // here. here we draw the line
@@ -119,9 +126,8 @@ export class Wave {
   }
 
   closeEnough(i) {
-    return false;
     let dl = i == 0 ? 0 : Math.abs(this.at(i).pos.y - this.at(i-i).pos.y);
-    let dr = i == this.particles.length-1 ? 0 : Math.abs(this.at(i).pos.y - this.at(i+1).pos.y);
+    let dr = i == this.len-1 ? 0 : Math.abs(this.at(i).pos.y - this.at(i+1).pos.y);
 
     return (dl + dr) < 10;
   }

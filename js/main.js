@@ -77,9 +77,10 @@ let thep5 = new p5(function (p) {
     p.background(232, 238, 242);
     // wave.particles[wave.particles.length-1].pos.y = p.mouseY;
     // wave.particles[0].pos.y = p.windowHeight/2;
-    wave.update(p, dt);
     if (opt.staticLastParticle) wave.at(-1).pos.y = p.windowHeight/2.0;
     if (p.mouseIsPressed && opt.mouseMoves) wave.at(0).pos.y = p.mouseY;
+    // if (p.mouseIsPressed && opt.mouseMoves) wave.at(Math.floor(wave.len/2)).pos.y = p.mouseY;
+    wave.update(p, dt, opt.staticLastParticle);
     wave.draw(p);
   };
 });

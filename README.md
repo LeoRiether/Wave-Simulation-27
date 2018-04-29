@@ -1,3 +1,5 @@
 # Wave Simulation #27
 
-> I still have to do this...
+## It doesn't work...AGAIN
+// TODO: Laplacian operator I guess
+// TODO: give up
