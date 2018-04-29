@@ -3,11 +3,30 @@ import { Vector } from "./vector.js";
 
 
 let thep5 = new p5(function (p) {
+
   let wave = new Wave();
   let particle = new Particle(Vector.is(0, p.windowHeight/2), 20, 1);
   particle.v = Vector.is(50, -300);
   let fr = 40;
   let dt = 1.0/fr;
+
+  // Guify
+  let gui = new guify({
+    title: 'Wave Simulation #27',
+    align: 'right',
+    theme: 'dark'
+  });
+
+  gui.Register([
+    {
+      type: 'range',
+      label: 'Mass',
+      min: 0.5, max: 10, step: 0.5,
+      object: particle,
+      property: 'm'
+    }
+  ])
+
   p.setup = () => {
     p.createCanvas(p.windowWidth, p.windowHeight);
     p.frameRate(fr);

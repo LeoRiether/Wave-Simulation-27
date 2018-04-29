@@ -8,12 +8,21 @@ export class Particle {
     this.a = Vector.zero;
     this.F = Vector.zero;
     this.r = r;
-    this.m = m;
-    this.m_inv = 1.0/m;
+    this._m = m;
+    this.m_inv = 1.0/this._m;
     console.log(pos, r);
   }
 
+  get m() {
+    return this._m;
+  }
+  set m(value) {
+    this._m = value;
+    this.m_inv = 1.0/this._m;
+  }
+
   updateDynamics(p, dt) {
+    console.log(this.m, this.m_inv);
     this.a = this.F.times(this.m_inv);
     this.F = Vector.zero;
   }
