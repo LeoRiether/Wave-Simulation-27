@@ -1,0 +1,30 @@
+{
+  "name": "wave_simul",
+  "version": "1.0.0",
+  "description": "Simulates a transverse wave",
+  "main": "wave.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "build:watch": "npm run build -- -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "change_this.jpg"
+  },
+  "keywords": [
+    "wave",
+    "simulation",
+    "physics"
+  ],
+  "author": "Leonardo Riether <leonardoalves8217@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "guify": "^0.10.1"
+  },
+  "devDependencies": {
+    "http-server": "^0.11.1",
+    "webpack": "^4.6.0",
+    "webpack-cli": "^2.0.15"
+  }
+}
