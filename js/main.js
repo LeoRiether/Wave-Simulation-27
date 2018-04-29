@@ -4,9 +4,7 @@ import { Vector } from "./vector.js";
 
 let thep5 = new p5(function (p) {
 
-  let wave = new Wave();
-  let particle = new Particle(Vector.is(0, p.windowHeight/2), 20, 1);
-  particle.v = Vector.is(50, -300);
+  let wave = new Wave(250, p, p.windowWidth*0.1);
   let fr = 40;
   let dt = 1.0/fr;
 
@@ -20,10 +18,20 @@ let thep5 = new p5(function (p) {
   gui.Register([
     {
       type: 'range',
-      label: 'Mass',
-      min: 0.5, max: 10, step: 0.5,
-      object: particle,
-      property: 'm'
+      label: 'k',
+      min: 120, max: 500, step: 10,
+      object: wave,
+      property: 'k'
+    },
+    {
+      type: 'button',
+      label: 'Reset',
+      action: () => {
+        for (let i = wave.particles.length-1; i--; ) {
+          wave.particles[i].pos.y = p.windowHeight/2;
+          wave.particles[i].v = Vector.zero;
+        }
+      }
     }
   ])
 
@@ -33,17 +41,15 @@ let thep5 = new p5(function (p) {
     p.background(232, 238, 242);
     p.fill(132, 191, 237);
     p.stroke(97, 154, 198);
+    p.strokeWeight(4);
   };
   
-
   p.draw = () => {
-    particle.F = Vector.is(0, 200*particle.m);
-    particle.updateDynamics(p, dt);
-    particle.updateKinematics(p, dt);
-
     p.clear();
     p.background(232, 238, 242);
-    particle.draw(p);
+    wave.particles[0].pos.y = p.mouseY;
+    wave.update(p, dt);
+    wave.draw(p);
   };
 });
 
