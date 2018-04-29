@@ -4,13 +4,14 @@ import { Vector } from "./vector.js";
 
 let thep5 = new p5(function (p) {
 
-  let wave = new Wave(250, p, p.windowWidth*0.1);
+  let wave = new Wave(1500, p, p.windowWidth*0.1);
   let fr = 40;
   let dt = 1.0/fr;
 
   let opt = {
     staticLastParticle: false,
-    mouseMoves: true
+    mouseMoves: true,
+    mouseIndex: 0
   };
 
   // Guify
@@ -43,23 +44,29 @@ let thep5 = new p5(function (p) {
       action: () => {
         for (let i = wave.particles.length-1; i >= 0; i--) {
           wave.at(i).pos.y = p.windowHeight/2.0;
-          wave.at(i).v = Vector.zero;
-          wave.at(i).a = Vector.zero;
-          wave.at(i).last_a = Vector.zero;
+          wave.at(i).v = 0;
+          wave.at(i).a = 0;
         }
       }
     },
     {
       type: 'checkbox',
-      label: 'Static Last Particle',
+      label: 'Static last particle',
       object: opt,
       property: 'staticLastParticle'
     },
     {
       type: 'checkbox',
-      label: 'Mouse Moves Particles',
+      label: 'Mouse moves particles',
       object: opt,
       property: 'mouseMoves'
+    },
+    {
+      type: 'range',
+      label: 'Moved particle index',
+      min: 0, max: wave.len-1, step: 1,
+      object: opt,
+      property: 'mouseIndex'
     }
   ])
 
@@ -77,10 +84,13 @@ let thep5 = new p5(function (p) {
     p.background(232, 238, 242);
     // wave.particles[wave.particles.length-1].pos.y = p.mouseY;
     // wave.particles[0].pos.y = p.windowHeight/2;
-    if (opt.staticLastParticle) wave.at(-1).pos.y = p.windowHeight/2.0;
-    if (p.mouseIsPressed && opt.mouseMoves) wave.at(0).pos.y = p.mouseY;
+    if (p.mouseIsPressed && opt.mouseMoves) {
+      wave.at(opt.mouseIndex).v = (p.mouseY - wave.at(opt.mouseIndex).pos.y)/dt;
+      wave.at(opt.mouseIndex).pos.y = p.mouseY;
+    }
     // if (p.mouseIsPressed && opt.mouseMoves) wave.at(Math.floor(wave.len/2)).pos.y = p.mouseY;
     wave.update(p, dt, opt.staticLastParticle);
+    if (opt.staticLastParticle) wave.at(-1).pos.y = p.windowHeight/2.0;
     wave.draw(p);
   };
 });

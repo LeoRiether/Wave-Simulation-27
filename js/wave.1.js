@@ -1,14 +1,12 @@
 import { Vector } from "./vector";
-import { sqrt } from "./do_i_seriously_need_a_module_just_for_the_sqrt_function";
 
 export class Particle {
 
   constructor(pos, m) {
     this.pos = pos;
-    this.v = 0;
-    this.nv = 0;
-    this.a = 0;
-    this.F = 0;
+    this.v = Vector.zero;
+    this.a = Vector.zero;
+    this.F = Vector.zero;
     this._m = m;
     this.m_inv = 1.0/m;
   }
@@ -25,23 +23,25 @@ export class Particle {
    * Updates the forces on the system based on the positions
    */
   // yl and yr are particle_to_the_left.y and particle_to_the_right.y, respectively
-  updateDynamics(p, dt, k, pl, pr) {
+  updateDynamics(p, k, yl, yr) {
     // Sets yl and yr to the same y as 'this' particle, so it
     // doesn't generate any force
+    yl = yl === false ? this.pos.y : yl;
+    yr = yr === false ? this.pos.y : yr;
     
-    if (pl !== false) {
-      // pl.nv += this.v;
-    } 
-    if (pr !== false) {
-      pr.nv += this.v;
-    }
+    let dyl = yl - this.pos.y;
+    let dyr = yr - this.pos.y;
+
+    this.F = new Vector(0, dyl*k + dyr*k);
+
+    this.last_a = this.a;
+    this.a = Vector.Scale(this.F, this.m_inv);
   }
 
   // After updating all the forces, updates velocity and position of the particle
   updateKinematics(p, dt) {
-    this.v = this.nv;
-    this.nv = 0;
-    this.pos.y += this.v*dt;
+    this.v.plus(Vector.Scale(this.a, dt));
+    this.pos.plus(Vector.Scale(this.v, dt));
     
     // Velocity Verlet
     // TODO: understand Verlet Integration
@@ -57,7 +57,7 @@ export class Particle {
 };
 
 // Some constants...
-Particle.r = 10;
+Particle.r = 2;
 Particle.m = 1;
 
 export class Wave {
@@ -86,11 +86,19 @@ export class Wave {
 
   update(p, dt, staticLastParticle) {
     // Dynamics update
-    this.at(-1).updateDynamics(p, dt, this.k, this.at(-2), false);
+    // this.at(-1).updateDynamics(
+    //   p, this.k, 
+    //   this.at(-2).pos.y, 
+    //   false
+    // );
     for (let i = this.len-2; i > 0; i--) {
-      this.at(i).updateDynamics(p, dt, this.k, this.at(i-1), this.at(i+1));
+      this.at(i).updateDynamics(
+        p, this.k,
+        this.at(i-1).pos.y,
+        this.at(i+1).pos.y
+      );
     }
-    this.at(0).updateDynamics(p, dt, this.k, false, this.at(1));
+    this.at(0).updateDynamics(p, this.k, false, this.at(1).pos.y);
 
     // Kinematics update...
     for (let i = this.len-1; i >= 0; i--) {
