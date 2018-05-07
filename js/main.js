@@ -44,14 +44,15 @@ let thep5 = new p5(function (p) {
       action: () => {
         for (let i = wave.particles.length-1; i >= 0; i--) {
           wave.at(i).pos.y = p.windowHeight/2.0;
-          wave.at(i).v = 0;
-          wave.at(i).a = 0;
+          wave.at(i).vl = 0;
+          wave.at(i).vr = 0;
+          wave.at(i).a  = 0;
         }
       }
     },
     {
       type: 'checkbox',
-      label: 'Static last particle',
+      label: 'Fixed last particle',
       object: opt,
       property: 'staticLastParticle'
     },
@@ -85,7 +86,8 @@ let thep5 = new p5(function (p) {
     // wave.particles[wave.particles.length-1].pos.y = p.mouseY;
     // wave.particles[0].pos.y = p.windowHeight/2;
     if (p.mouseIsPressed && opt.mouseMoves) {
-      wave.at(opt.mouseIndex).v = (p.mouseY - wave.at(opt.mouseIndex).pos.y)/dt;
+      wave.at(opt.mouseIndex).vr = (p.mouseY - wave.at(opt.mouseIndex).pos.y)/dt;
+      wave.at(opt.mouseIndex).vl = (p.mouseY - wave.at(opt.mouseIndex).pos.y)/dt;
       wave.at(opt.mouseIndex).pos.y = p.mouseY;
     }
     // if (p.mouseIsPressed && opt.mouseMoves) wave.at(Math.floor(wave.len/2)).pos.y = p.mouseY;

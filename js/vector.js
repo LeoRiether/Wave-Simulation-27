@@ -1,3 +1,5 @@
+// Could have jsut used p5.Vector, 
+// but didn't know it existed until after this file was made
 export class Vector {
 
   constructor(x, y) {

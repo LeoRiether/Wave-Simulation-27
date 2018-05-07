@@ -5,8 +5,10 @@ export class Particle {
 
   constructor(pos, m) {
     this.pos = pos;
-    this.v = 0;
-    this.nv = 0;
+    this.vr = 0;
+    this.vl = 0;
+    this.nvr = 0;
+    this.nvl = 0;
     this.a = 0;
     this.F = 0;
     this._m = m;
@@ -30,18 +32,24 @@ export class Particle {
     // doesn't generate any force
     
     if (pl !== false) {
-      // pl.nv += this.v;
-    } 
+      pl.nvl += this.vl; 
+    } else {
+      pr.nvr -= this.vl;
+    }
     if (pr !== false) {
-      pr.nv += this.v;
+      pr.nvr += this.vr;
+    } else {
+      pl.nvl -= this.vr;
     }
   }
 
   // After updating all the forces, updates velocity and position of the particle
   updateKinematics(p, dt) {
-    this.v = this.nv;
-    this.nv = 0;
-    this.pos.y += this.v*dt;
+    this.vr = this.nvr;
+    this.vl = this.nvl;
+    this.nvr = 0;
+    this.nvl = 0;
+    this.pos.y += this.vr*dt + this.vl*dt;
     
     // Velocity Verlet
     // TODO: understand Verlet Integration
@@ -68,6 +76,7 @@ export class Wave {
     // Initializes all particles
     this.particles = [];
     let x = margin + Particle.r;
+    let y;
     while (x + Particle.r < p.windowWidth - margin) {
       this.particles.push(new Particle(Vector.is(x, p.windowHeight/2), Particle.m));
       x += Particle.r;
