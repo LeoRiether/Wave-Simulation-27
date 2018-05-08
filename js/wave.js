@@ -59,6 +59,7 @@ export class Particle {
   }
 
   // P-chan!
+  // Rest in peace, P-chan!
   draw(pchan) {
     pchan.arc(this.pos.x, this.pos.y, Particle.r, Particle.r, 0, pchan.TAU);
   }
@@ -66,7 +67,7 @@ export class Particle {
 
 // Some constants...
 Particle.r = 10;
-Particle.m = 1;
+Particle.m = 1; // absolutely no purpose whatsoever
 
 export class Wave {
 

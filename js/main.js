@@ -10,7 +10,6 @@ let thep5 = new p5(function (p) {
 
   let opt = {
     staticLastParticle: false,
-    mouseMoves: true,
     mouseIndex: 0
   };
 
@@ -22,13 +21,13 @@ let thep5 = new p5(function (p) {
   });
 
   gui.Register([
-    {
+    /*{
       type: 'range',
       label: 'k',
       min: 120, max: 500, step: 10,
       object: wave,
       property: 'k'
-    },
+    },*/
     {
       type: 'color',
       label: 'Color',
@@ -56,12 +55,12 @@ let thep5 = new p5(function (p) {
       object: opt,
       property: 'staticLastParticle'
     },
-    {
+    /*{
       type: 'checkbox',
       label: 'Mouse moves particles',
       object: opt,
       property: 'mouseMoves'
-    },
+    },*/
     {
       type: 'range',
       label: 'Moved particle index',
@@ -85,9 +84,9 @@ let thep5 = new p5(function (p) {
     p.background(232, 238, 242);
     // wave.particles[wave.particles.length-1].pos.y = p.mouseY;
     // wave.particles[0].pos.y = p.windowHeight/2;
-    if (p.mouseIsPressed && opt.mouseMoves) {
-      wave.at(opt.mouseIndex).vr = (p.mouseY - wave.at(opt.mouseIndex).pos.y)/dt;
-      wave.at(opt.mouseIndex).vl = (p.mouseY - wave.at(opt.mouseIndex).pos.y)/dt;
+    if (p.mouseIsPressed && !p.keyIsDown(p.SHIFT)) {
+      if(opt.mouseIndex !== wave.len) wave.at(opt.mouseIndex).vr = (p.mouseY - wave.at(opt.mouseIndex).pos.y)/dt;
+      if(opt.mouseIndex !== 0) wave.at(opt.mouseIndex).vl = (p.mouseY - wave.at(opt.mouseIndex).pos.y)/dt;
       wave.at(opt.mouseIndex).pos.y = p.mouseY;
     }
     // if (p.mouseIsPressed && opt.mouseMoves) wave.at(Math.floor(wave.len/2)).pos.y = p.mouseY;
