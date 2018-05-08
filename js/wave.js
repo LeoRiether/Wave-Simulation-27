@@ -1,5 +1,4 @@
 import { Vector } from "./vector";
-// import { sqrt } from "./do_i_seriously_need_a_module_just_for_the_sqrt_function";
 
 export class Particle {
 
@@ -33,12 +32,12 @@ export class Particle {
     
     if (pl !== false) {
       pl.nvl += this.vl; 
-    } else {
+    } else {    // Reflexão
       pr.nvr -= this.vl;
     }
     if (pr !== false) {
       pr.nvr += this.vr;
-    } else {
+    } else {    // Reflexão
       pl.nvl -= this.vr;
     }
   }
@@ -105,15 +104,12 @@ export class Wave {
     // Kinematics update...
     for (let i = this.len-1; i >= 0; i--) {
       this.at(i).updateKinematics(p, dt);
-      // if (i > 0 && this.closeEnough(i)) { // close enough, no force
-      //   this.at(i).pos.y = this.at(i-1).pos.y;
-      // }
     }
   }
 
   draw(p) {
     for (let i = this.len-1; i >= 0; i--) {
-      if (i > 0) {// if not on the last particle
+      if (i > 0) { // if not on the last iterated particle
         // WHERE DO WE DRAW THE LINE?
         // here. here we draw the line
         p.line(this.at(i-1).pos.x, this.at(i-1).pos.y,
@@ -122,14 +118,4 @@ export class Wave {
       this.at(i).draw(p);
     }
   }
-
-  closeEnough(i) {
-    let dl = i == 0 ? 0 : Math.abs(this.at(i).pos.y - this.at(i-i).pos.y);
-    let dr = i == this.len-1 ? 0 : Math.abs(this.at(i).pos.y - this.at(i+1).pos.y);
-
-    return (dl + dr) < 10;
-  }
 }
-
-
-console.log("Wave.ts loaded");

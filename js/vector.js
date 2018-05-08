@@ -55,5 +55,3 @@ export class Vector {
 };
 
 Vector.zero = Vector.is(0, 0);
-
-console.log("Vector.ts loaded");
